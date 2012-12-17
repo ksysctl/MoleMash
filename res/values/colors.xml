@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="txt_score">#ffffff</color>
+    <color name="bg_energy">#1474c0</color>
+
+</resources>

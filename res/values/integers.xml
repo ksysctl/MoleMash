@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <integer name="next_movement">1000</integer>
+    <integer name="vibration_lenght">50</integer>
+    <dimen name="energy_width">200dp</dimen>
+    <dimen name="energy_height">8dp</dimen>
+    <integer name="energy">200</integer>
+    <integer name="fail">20</integer>
+
+</resources>
