@@ -7,8 +7,21 @@
             android:title="Set Difficulty Level"
             android:summary="This preference allows to select speed"
             android:key="speed"
-            android:defaultValue="@integer/next_movement"
+            android:defaultValue="@string/next_movement"
             android:entries="@array/speed_names"
             android:entryValues="@array/speed_values" />
-        </PreferenceCategory>
+        
+        <CheckBoxPreference
+            android:title="Sound"
+            android:summary="Enable game over sound"
+            android:key="sound"
+            android:defaultValue="@bool/sound" />
+        
+        <CheckBoxPreference
+            android:title="Vibrator"
+            android:summary="Enable vibrator"
+            android:key="vibrator"
+            android:defaultValue="@bool/vibrator" />
+
+    </PreferenceCategory>
 </PreferenceScreen>

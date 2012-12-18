@@ -27,6 +27,8 @@ public class MainActivity extends Activity {
 	private LinearLayout bgLayout;
 	private MoleView moleView;
 	private int next_movement;
+	private boolean vibrator;
+	private boolean sound;
 	private String scoreboard;
 	
 	@Override
@@ -38,13 +40,10 @@ public class MainActivity extends Activity {
 		
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		next_movement = Integer.valueOf(
-			preferences.getString(
-				"speed",
-				Integer.toString(
-					getResources().getInteger(R.integer.next_movement)
-				)
-			)
+			preferences.getString("speed", getResources().getString(R.string.next_movement))
 		);
+		sound = preferences.getBoolean("sound", getResources().getBoolean(R.bool.sound));
+		vibrator = preferences.getBoolean("vibrator", getResources().getBoolean(R.bool.vibrator));
 
     	scoreboard = getResources().getString(R.string.txt_score);
     	
@@ -55,6 +54,7 @@ public class MainActivity extends Activity {
 		
 		bgLayout = (LinearLayout) findViewById(R.id.bgLayout);
 		moleView = new MoleView(this);
+		moleView.setVibrator(vibrator);
 		bgLayout.addView(moleView);
 		
 		PreferenceListener();
@@ -97,19 +97,21 @@ public class MainActivity extends Activity {
 			public boolean onTouch(View view, MotionEvent motionEvent) {
 				view.onTouchEvent(motionEvent);
 				
-				int miss = MoleView.getEnergy();
+				int miss = moleView.getEnergy();
                 if (miss <= 0) {
                 	handler.removeCallbacks(runnable);
                 	
-                	try {
-                		MediaPlayer mediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.game_over);
-                		mediaPlayer.start();
-                	} catch (Exception e) { }
+                	if (sound) {
+	                	try {
+	                		MediaPlayer mediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.game_over);
+	                		mediaPlayer.start();
+	                	} catch (Exception e) { }
+                	}
                 }
 				
 				switch(motionEvent.getAction()) {
 					case MotionEvent.ACTION_DOWN: {
-						txtScore.setText(scoreboard + " " + Integer.toString(MoleView.getScore()));
+						txtScore.setText(scoreboard + " " + Integer.toString(moleView.getScore()));
 		            	LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(miss, txtEnergy.getHeight());
 		            	txtEnergy.setLayoutParams(layoutParams);
 					}
@@ -130,15 +132,15 @@ public class MainActivity extends Activity {
 				} else {
 			    	if (key.equals("speed")) {
 			    		next_movement = Integer.valueOf(
-			    			preferences.getString(
-			    				"speed",
-			    				Integer.toString(
-			    					getResources().getInteger(R.integer.next_movement)
-			    				)
-			    			)
+			    			preferences.getString("speed", getResources().getString(R.string.next_movement))
 			    		);
-			    		Toast.makeText(getBaseContext(), "New speed applied", Toast.LENGTH_SHORT).show();
-			    	} 
+			    	} else if (key.equals("sound")) {
+			    		sound = preferences.getBoolean("sound", getResources().getBoolean(R.bool.sound));
+			    	} else if (key.equals("vibrator")) {
+			    		vibrator = preferences.getBoolean("vibrator", getResources().getBoolean(R.bool.vibrator));
+			    		moleView.setVibrator(vibrator);
+			    	}
+			    	Toast.makeText(getBaseContext(), "Preference saved", Toast.LENGTH_SHORT).show();
 				}
 			}
 		};

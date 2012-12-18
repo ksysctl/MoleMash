@@ -14,6 +14,7 @@ public class MoleView extends View {
 	private Context ctx;
     private Bitmap bitmap;
     private boolean show;
+    private boolean vibrator;
 	private float xBitmap;
 	private float yBitmap;
 	private int vibration_lenght;
@@ -21,8 +22,8 @@ public class MoleView extends View {
 	private int wBitmap;
 	private int hBitmap;
 	private int fail;
-	private static int hits;
-	private static int miss;
+	private int hits;
+	private int miss;
 
     public MoleView(Context context) {
         super(context);
@@ -56,6 +57,7 @@ public class MoleView extends View {
         hBitmap = bitmap.getHeight();
         
         show = false;
+        vibrator = true;
         
         backgroundColor = background;
     }
@@ -94,12 +96,16 @@ public class MoleView extends View {
     	return hBitmap;
     }
     
-    public static int getScore() {
+    public int getScore() {
     	return hits;
     }
     
-    public static int getEnergy() {
+    public int getEnergy() {
     	return miss;
+    }
+    
+    public void setVibrator(boolean status) {
+    	vibrator = status;
     }
 
     @Override
@@ -115,8 +121,10 @@ public class MoleView extends View {
 	        		if (x >= xBitmap && x < (xBitmap + wBitmap) && y >= yBitmap && y < (yBitmap + hBitmap)) {
 	        			hits++;
 	        			
-	        			Vibrator vibrator = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE);
-	        			vibrator.vibrate(vibration_lenght);
+	        			if (vibrator) {
+		        			Vibrator vs = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE);
+		        			vs.vibrate(vibration_lenght);
+	        			}
 	                } else {
 	                	miss = miss - fail;
 	                }
