@@ -16,7 +16,6 @@ import android.preference.PreferenceManager;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.widget.TextView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	private OnSharedPreferenceChangeListener pfListener;
@@ -125,23 +124,16 @@ public class MainActivity extends Activity {
 	private void PreferenceListener() {
 		pfListener = new OnSharedPreferenceChangeListener() {
 			public void onSharedPreferenceChanged(SharedPreferences pf, String key) {
-				if (pf.getBoolean("preference_first_time", true)) {
-					SharedPreferences.Editor editor = pf.edit();
-					editor.putBoolean("preference_first_time", false);
-					editor.commit();
-				} else {
-			    	if (key.equals("speed")) {
-			    		next_movement = Integer.valueOf(
-			    			preferences.getString("speed", getResources().getString(R.string.next_movement))
-			    		);
-			    	} else if (key.equals("sound")) {
-			    		sound = preferences.getBoolean("sound", getResources().getBoolean(R.bool.sound));
-			    	} else if (key.equals("vibrator")) {
-			    		vibrator = preferences.getBoolean("vibrator", getResources().getBoolean(R.bool.vibrator));
-			    		moleView.setVibrator(vibrator);
-			    	}
-			    	Toast.makeText(getBaseContext(), "Preference saved", Toast.LENGTH_SHORT).show();
-				}
+		    	if (key.equals("speed")) {
+		    		next_movement = Integer.valueOf(
+		    			preferences.getString("speed", getResources().getString(R.string.next_movement))
+		    		);
+		    	} else if (key.equals("sound")) {
+		    		sound = preferences.getBoolean("sound", getResources().getBoolean(R.bool.sound));
+		    	} else if (key.equals("vibrator")) {
+		    		vibrator = preferences.getBoolean("vibrator", getResources().getBoolean(R.bool.vibrator));
+		    		moleView.setVibrator(vibrator);
+		    	}
 			}
 		};
 	}
