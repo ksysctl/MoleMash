@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="Settings">
+
+        <ListPreference
+            android:title="Set Difficulty Level"
+            android:summary="This preference allows to select speed"
+            android:key="speed"
+            android:defaultValue="@integer/next_movement"
+            android:entries="@array/speed_names"
+            android:entryValues="@array/speed_values" />
+        </PreferenceCategory>
+</PreferenceScreen>

@@ -24,7 +24,7 @@ public class MoleView extends View {
 	private static int hits;
 	private static int miss;
 
-    private MoleView(Context context) {
+    public MoleView(Context context) {
         super(context);
         ctx = context;
         

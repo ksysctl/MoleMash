@@ -6,13 +6,21 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.app.Activity;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.MotionEvent;
+import android.media.MediaPlayer;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.widget.TextView;
 import android.widget.LinearLayout;
-import android.graphics.Color;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
+	private OnSharedPreferenceChangeListener pfListener;
+	private SharedPreferences preferences;
 	private TextView txtEnergy;
 	private TextView txtScore;
 	private Handler handler;
@@ -28,7 +36,16 @@ public class MainActivity extends Activity {
 		
 		handler = new Handler();
 		
-    	next_movement = getResources().getInteger(R.integer.next_movement);
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		next_movement = Integer.valueOf(
+			preferences.getString(
+				"speed",
+				Integer.toString(
+					getResources().getInteger(R.integer.next_movement)
+				)
+			)
+		);
+
     	scoreboard = getResources().getString(R.string.txt_score);
     	
 		txtScore = (TextView) findViewById(R.id.txtScore);
@@ -37,28 +54,11 @@ public class MainActivity extends Activity {
         txtScore.setText(scoreboard + " " + Integer.toString(0));
 		
 		bgLayout = (LinearLayout) findViewById(R.id.bgLayout);
-		moleView = new MoleView(this, Color.DKGRAY);
+		moleView = new MoleView(this);
 		bgLayout.addView(moleView);
 		
-		moleView.setOnTouchListener(new View.OnTouchListener() {
-			public boolean onTouch(View view, MotionEvent motionEvent) {
-				view.onTouchEvent(motionEvent);
-				
-				int miss = MoleView.getEnergy();
-                if (miss <= 0)
-                	handler.removeCallbacks(runnable);
-				
-				switch(motionEvent.getAction()) {
-					case MotionEvent.ACTION_DOWN: {
-						txtScore.setText(scoreboard + " " + Integer.toString(MoleView.getScore()));
-		            	LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(miss, txtEnergy.getHeight());
-		            	txtEnergy.setLayoutParams(layoutParams);
-					}
-				}
-		        
-		        return true;
-			}
-        });
+		PreferenceListener();
+		TouchListener();
 	}
 
 	@Override
@@ -79,6 +79,71 @@ public class MainActivity extends Activity {
 		return true;
 	}
     
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+	        case R.id.menu_settings:
+	            Intent settingsActivity = new Intent(getBaseContext(), SettingsActivity.class);
+	            startActivity(settingsActivity);
+	    		preferences.registerOnSharedPreferenceChangeListener(pfListener);
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+		}
+	}
+	
+	private void TouchListener() {
+		moleView.setOnTouchListener(new View.OnTouchListener() {
+			public boolean onTouch(View view, MotionEvent motionEvent) {
+				view.onTouchEvent(motionEvent);
+				
+				int miss = MoleView.getEnergy();
+                if (miss <= 0) {
+                	handler.removeCallbacks(runnable);
+                	
+                	try {
+                		MediaPlayer mediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.game_over);
+                		mediaPlayer.start();
+                	} catch (Exception e) { }
+                }
+				
+				switch(motionEvent.getAction()) {
+					case MotionEvent.ACTION_DOWN: {
+						txtScore.setText(scoreboard + " " + Integer.toString(MoleView.getScore()));
+		            	LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(miss, txtEnergy.getHeight());
+		            	txtEnergy.setLayoutParams(layoutParams);
+					}
+				}
+		        
+		        return true;
+			}
+        });
+	}
+	
+	private void PreferenceListener() {
+		pfListener = new OnSharedPreferenceChangeListener() {
+			public void onSharedPreferenceChanged(SharedPreferences pf, String key) {
+				if (pf.getBoolean("preference_first_time", true)) {
+					SharedPreferences.Editor editor = pf.edit();
+					editor.putBoolean("preference_first_time", false);
+					editor.commit();
+				} else {
+			    	if (key.equals("speed")) {
+			    		next_movement = Integer.valueOf(
+			    			preferences.getString(
+			    				"speed",
+			    				Integer.toString(
+			    					getResources().getInteger(R.integer.next_movement)
+			    				)
+			    			)
+			    		);
+			    		Toast.makeText(getBaseContext(), "New speed applied", Toast.LENGTH_SHORT).show();
+			    	} 
+				}
+			}
+		};
+	}
+	
 	private Runnable runnable = new Runnable() {
 		public void run() {
 			Random random = new Random();

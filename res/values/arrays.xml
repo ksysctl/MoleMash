@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="speed_names">
+        <item>Easy</item>
+        <item>Noob</item>
+        <item>Normal</item>
+        <item>Hard</item>
+        <item>Expert</item>
+    </string-array>
+    <string-array name="speed_values">
+        <item>2000</item>
+        <item>1500</item>
+        <item>1000</item>
+        <item>500</item>
+        <item>250</item>
+    </string-array>
+</resources>
